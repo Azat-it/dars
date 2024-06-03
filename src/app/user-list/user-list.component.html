@@ -1,0 +1,16 @@
+<!-- <p>user1</p> -->
+<div *ngFor="let user of users$ | async" (click)="editUser(user)">
+  <div>{{ user.id }}</div>
+  <div>{{ user.name }}</div>
+  <div>{{ user.email }}</div>
+  <div>{{ user.username }}</div>
+  <button (click)="deleteUser(user.id)">delete</button>
+  <!-- <button (click)="editUser(user)">edit</button> -->
+</div>
+
+<!-- Кнопка для открытия модального окна -->
+<button (click)="openModal()">+ add user</button>
+
+<!-- Прокидываем событие открытия модального окна в компонент create-edit-card
+<app-create-edit-card (openModalEvent)="openModal()"></app-create-edit-card>
+ -->
