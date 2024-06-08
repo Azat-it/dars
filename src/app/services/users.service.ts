@@ -2,6 +2,9 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { User } from '../user-card/user-card.component';
 import { isPlatformBrowser } from '@angular/common';
+import { Store } from '@ngrx/store';
+import { UserActions } from '../NGRX/actions';
+import { UserState } from '../NGRX/state';
 
 @Injectable({
   providedIn: 'root',
@@ -11,17 +14,20 @@ export class UserService {
   public readonly users$ = this._users$.asObservable();
   private isBrowser: boolean;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private store: Store
+  ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
     this.loadUsersFromLocalStorage();
   }
 
-  // Загружаем пользователей из localStorage при инициализации сервиса
   private loadUsersFromLocalStorage(): void {
     if (this.isBrowser) {
       const usersFromLocalStorage = localStorage.getItem('users');
       if (usersFromLocalStorage) {
-        this.setUsers(JSON.parse(usersFromLocalStorage));
+        const users: User[] = JSON.parse(usersFromLocalStorage);
+        this.store.dispatch(UserActions.setUsers({ users }));
       }
     }
   }
@@ -32,7 +38,7 @@ export class UserService {
   }
 
   public setUsers(users: User[]): void {
-    this._users$.next(users);
+    this.store.dispatch(UserActions.setUsers({ users }));
     this.saveUsersToLocalStorage(users); // Сохраняем в localStorage
   }
 
@@ -43,11 +49,13 @@ export class UserService {
     this.saveUsersToLocalStorage(updatedUsers); // Сохраняем в localStorage
   }
 
-  public addUser(newUser: User): void {
-    const currentUsers = this._users$.getValue();
-    const updatedUsers = [...currentUsers, newUser];
-    this._users$.next(updatedUsers);
-    this.saveUsersToLocalStorage(updatedUsers); // Сохраняем в localStorage
+  public addUser(user: User): void {
+    console.log('вывод: ', { user });
+    // const currentUsers = this._users$.getValue();
+    // const updatedUsers = [...currentUsers];
+    // this._users$.next(updatedUsers);
+    // this.saveUsersToLocalStorage(updatedUsers); // Сохраняем в localStorage
+    this.store.dispatch(UserActions.addUser({ user })); // Отправляет действие добавления пользователя в хранилище
   }
 
   public editUser(user: User): void {

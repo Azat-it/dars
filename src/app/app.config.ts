@@ -6,9 +6,19 @@ import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideEffects } from '@ngrx/effects';
 import { provideStore } from '@ngrx/store';
+import { provideRouterStore, routerReducer } from '@ngrx/router-store';
+import { provideStoreDevtools } from '@ngrx/store-devtools';
+import { loadUserEffect } from './NGRX/effects';
+import * as userEffects from './NGRX/effects';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideRouter(routes),
+  providers: [
+    provideRouter(routes),
     provideClientHydration(),
-    provideHttpClient(), provideEffects(), provideStore()]
+    provideHttpClient(),
+    provideEffects(userEffects),
+    provideStore(),
+    provideRouterStore(),
+    provideStoreDevtools(),
+  ],
 };

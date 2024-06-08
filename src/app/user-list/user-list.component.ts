@@ -1,10 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { UserApiService } from '../services/users-api.service';
 import { UserService } from '../services/users.service';
 import { AsyncPipe, NgFor } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateEditCard } from '../create-edit-component/create-edit-card.component';
 import { User } from '../user-card/user-card.component';
+import { Store, select } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import * as UserActions from '../NGRX/actions';
+import * as selectUser from '../NGRX/selector';
 
 @Component({
   selector: 'app-user-list',
@@ -14,7 +18,10 @@ import { User } from '../user-card/user-card.component';
   imports: [NgFor, AsyncPipe, CreateEditCard],
 })
 export class UserList implements OnInit {
-  public readonly users$ = this.userService.users$;
+  public users$?: Observable<User[]>;
+  public loadingUsers$?: Observable<User[]>;
+
+  private store = inject(Store);
 
   constructor(
     private userApiService: UserApiService,
@@ -23,20 +30,30 @@ export class UserList implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.users$ = this.store.pipe(select(selectUser.usersSelector));
+    this.loadingUsers$ = this.store.pipe(select(selectUser.loadingUsers$));
+
+    this.store.subscribe((state) => {
+      console.log(state);
+    });
+
+    this.users$.subscribe((users) => {
+      console.log('Current Users:', users);
+    });
+
     const usersFromLocalStorage = localStorage.getItem('users');
-    console.log(usersFromLocalStorage);
     if (
       !usersFromLocalStorage ||
       JSON.parse(usersFromLocalStorage).length === 0
     ) {
       this.userApiService.getUsers().subscribe((data: any[]) => {
-        this.userService.setUsers(data);
+        this.store.dispatch(UserActions.loadUsers()); // Загружаем пользователей
       });
     }
   }
 
   deleteUser(id: number): void {
-    this.userService.deleteUser(id);
+    this.userService.deleteUser(id); // Используем сервис
   }
 
   editUser(user: User): void {
@@ -48,13 +65,18 @@ export class UserList implements OnInit {
     const dialogRef = this.dialog.open(CreateEditCard, {
       hasBackdrop: true,
       data: {
-        user: user || { id: '', name: '', email: '', username: '' },
+        user: user ?? { id: '', name: '', email: '', username: '' },
         isEdit,
       },
     });
 
     dialogRef.afterClosed().subscribe((newUser) => {
       if (!newUser) return;
+
+      // Приведение типов данных
+      newUser.id = +newUser.id;
+
+      console.log('User to save:', newUser);
 
       if (isEdit) {
         this.userService.editUser(newUser);
