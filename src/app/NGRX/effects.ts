@@ -11,7 +11,7 @@ export const loadUserEffect = createEffect(
     const api = inject(UserApiService);
     const actions$ = inject(Actions);
     return actions$.pipe(
-      ofType(loadUsers), // Замените на ваш актуальный тип действия
+      ofType(loadUsers),
       switchMap(() =>
         api.getUsers().pipe(
           map((users: User[]) => loadUserSuccess({ users })),
@@ -20,5 +20,5 @@ export const loadUserEffect = createEffect(
       )
     );
   },
-  { functional: true } // Добавлена опция dispatch
+  { functional: true }
 );

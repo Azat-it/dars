@@ -29,18 +29,15 @@ export class CreateEditCard {
     email: new FormControl(''),
   });
   constructor(
+    // MAT_DIALOG_DATA private readonly user?: User
     @Inject(MAT_DIALOG_DATA) private data: { user: User; isEdit: boolean },
     private dialogRef: MatDialogRef<CreateEditCard>
   ) {
-    this.form.patchValue(data.user);
+    this.form.patchValue(data?.user);
     this.isEdit = data.isEdit;
   }
 
-  // user = this.data.user;
-  // isEdit = this.data.isEdit;
-
   save(): void {
     this.dialogRef.close(this.form.value);
-    console.log('save');
   }
 }

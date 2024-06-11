@@ -10,6 +10,7 @@ import { provideRouterStore, routerReducer } from '@ngrx/router-store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { loadUserEffect } from './NGRX/effects';
 import * as userEffects from './NGRX/effects';
+import { USER_KEY, userReducer } from './NGRX/reducer';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -17,7 +18,7 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(),
     provideHttpClient(),
     provideEffects(userEffects),
-    provideStore(),
+    provideStore({ [USER_KEY]: userReducer }),
     provideRouterStore(),
     provideStoreDevtools(),
   ],

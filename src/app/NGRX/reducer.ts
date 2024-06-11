@@ -18,14 +18,19 @@ export const USER_KEY = 'user';
 
 export const userReducer = createReducer(
   initialState,
-  on(UserActions.addUser, (state, { user }) => ({
-    ...state,
-    users: [...state.users, user],
-  })),
-  on(UserActions.deleteUser, (state, { userId }) => ({
-    ...state,
-    users: state.users.filter((user) => user.id !== userId),
-  })),
+
+  on(UserActions.addUser, (state, { user }) => {
+    return {
+      ...state,
+      users: [...state.users, user],
+    };
+  }),
+  on(UserActions.deleteUser, (state, { userId }) => {
+    return {
+      ...state,
+      users: state.users.filter((user) => user.id !== userId),
+    };
+  }),
   on(UserActions.editUser, (state, { editedUser }) => ({
     ...state,
     users: state.users.map((user) =>
@@ -40,7 +45,7 @@ export const userReducer = createReducer(
   on(UserActions.loadUserSuccess, (state, { users }) => ({
     ...state,
     loading: false,
-    users: [...users],
+    users,
   })),
   on(UserActions.loadUserFailure, (state, { error }) => ({
     ...state,

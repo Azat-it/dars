@@ -1,10 +1,11 @@
-import { User } from '../user-card/user-card.component';
-import { UserState } from '../NGRX/state';
+// import { User } from '../user-card/user-card.component';
+
 import { createFeatureSelector } from '@ngrx/store';
 import { createSelector } from '@ngrx/store';
+import { UserState } from './reducer';
 import { USER_KEY } from '../NGRX/reducer';
 
-export const featureSelector = createFeatureSelector<UserState>('user');
+export const featureSelector = createFeatureSelector<UserState>(USER_KEY);
 
 export const usersSelector = createSelector(
   featureSelector,
